@@ -1,62 +1,38 @@
-import type React from "react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, ImageIcon, FileText, X, Paperclip } from "lucide-react";
+import { useChatInterface } from "@/hooks/useChatInterface";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 interface ChatInterfaceProps {
   inputText: string;
 }
-interface AttachedFile {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  url: string;
-}
 
 export function ChatInterface(props: ChatInterfaceProps) {
   const { inputText } = props;
+  const navigate = useNavigate();
 
-  const [input, setInput] = useState("");
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const {
+    input,
+    setInput,
+    attachedFiles,
+    handleSubmit,
+    handleFileAttach,
+    removeFile,
+    formatFileSize,
+    isLoading,
+  } = useChatInterface();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() && attachedFiles.length === 0) return;
-
-    console.log("Message:", input);
-    console.log("Files:", attachedFiles);
-    setInput("");
-    setAttachedFiles([]);
-  };
-
-  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const newFiles: AttachedFile[] = files.map((file) => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      url: URL.createObjectURL(file),
-    }));
-    setAttachedFiles((prev) => [...prev, ...newFiles]);
-    e.target.value = "";
-  };
-
-  const removeFile = (id: string) => {
-    setAttachedFiles((prev) => prev.filter((file) => file.id !== id));
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-    );
-  };
+  useEffect(() => {
+    if (isLoading) {
+      navigate("/agents", {
+        state: {
+          input,
+        },
+      });
+    }
+  }, [isLoading, navigate, input]);
 
   return (
     <div className="">
