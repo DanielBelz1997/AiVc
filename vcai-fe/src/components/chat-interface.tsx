@@ -1,22 +1,28 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Send } from "lucide-react"
+import type React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Send } from "lucide-react";
 
-export function ChatInterface() {
-  const [input, setInput] = useState("")
+interface ChatInterfaceProps {
+  inputText: string;
+}
+
+export function ChatInterface(props: ChatInterfaceProps) {
+  const { inputText } = props;
+
+  const [input, setInput] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim()) return
+    e.preventDefault();
+    if (!input.trim()) return;
 
     // Handle message submission here
-    console.log("Message:", input)
-    setInput("")
-  }
+    console.log("Message:", input);
+    setInput("");
+  };
 
   return (
     <div className="flex items-center justify-center">
@@ -27,7 +33,7 @@ export function ChatInterface() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="What do you want to know about Triolla?"
+                placeholder={inputText}
                 className="flex-1 bg-transparent border-none text-white placeholder:text-white/60 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl py-2"
               />
 
@@ -45,5 +51,5 @@ export function ChatInterface() {
         </form>
       </div>
     </div>
-  )
+  );
 }
