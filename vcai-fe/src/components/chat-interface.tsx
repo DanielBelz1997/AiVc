@@ -9,7 +9,6 @@ import {
   Presentation,
 } from "lucide-react";
 import { useChatInterface } from "@/hooks/useChatInterface";
-import { useNavigate } from "react-router-dom";
 import { CHAT_INTERFACE_CHIPS_TEXT } from "@/constants/home";
 
 interface ChatInterfaceProps {
@@ -27,7 +26,6 @@ export function ChatInterface(props: ChatInterfaceProps) {
     handleFileAttach,
     removeFile,
     formatFileSize,
-    isLoading,
   } = useChatInterface();
 
   // Helper function to determine if a file is a PowerPoint file
