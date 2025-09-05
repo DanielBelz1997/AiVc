@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/bash 
+
+# add permissions: chmod +x commit_and_push.sh
 
 # Check if a commit message was provided
 if [ -z "$1" ]; then

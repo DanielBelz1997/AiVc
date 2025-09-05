@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export interface AgentResponse {
   id: string;
   agent: "marketing" | "product" | "legal" | "verifier";
