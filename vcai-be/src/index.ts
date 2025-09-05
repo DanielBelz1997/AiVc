@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import apiRoutes from "./routes";
+import { specs, swaggerUi, swaggerUiOptions } from "./config/swagger";
 
 dotenv.config();
 
@@ -15,31 +16,15 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Basic route
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    message: "VcAi Backend API is running!",
-    version: "1.0.0",
-    timestamp: new Date().toISOString(),
-  });
-});
+// Swagger documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
 
-// Health check endpoint
-app.get("/health", (req: Request, res: Response) => {
-  res.status(200).json({
-    status: "OK",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// API routes
 app.use("/api", apiRoutes);
 
-// Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
@@ -64,6 +49,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`🌐 API base URL: http://localhost:${PORT}/api`);
+  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
 });
 
 export default app;
