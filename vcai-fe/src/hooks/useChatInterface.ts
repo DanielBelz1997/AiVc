@@ -1,6 +1,7 @@
 import type { AttachedFile } from "@/types";
 import { useState } from "react";
 import type { WorkflowState } from "./useAgentsFlow";
+import { useNavigate } from "react-router-dom";
 
 export interface AgentResponse {
   id: string;
@@ -23,6 +24,7 @@ export const useChatInterface = () => {
     isComplete: false,
     verifierConclusion: null,
   });
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,12 +32,13 @@ export const useChatInterface = () => {
     e.preventDefault();
     if (!input.trim() && attachedFiles.length === 0) return;
 
-    setIsLoading(true);
+    navigate("/agents", {
+      state: {
+        input,
+        attachedFiles,
+      },
+    });
 
-    console.log("Message:", input);
-    console.log("Files:", attachedFiles);
-
-    // Don't clear input immediately - let navigation happen first
     setTimeout(() => {
       setInput("");
       setAttachedFiles([]);

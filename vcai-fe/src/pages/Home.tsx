@@ -1,6 +1,5 @@
 import TextType from "@/components/ui/titleText";
 import { ChatInterface } from "@/components/chat-interface";
-import { NorthernLightsBackground } from "@/components/ui/shadcn-io/northern-lights-background";
 import {
   CHANGING_TITLE,
   CHAT_INPUT_TEXT,
@@ -12,6 +11,7 @@ import {
   TITLE_PAUSE_DURATION,
   TITLE_TYPING_SPEED,
 } from "@/constants";
+import { NorthernLightsBackground } from "@/components/ui/shadcn-io/northern-lights-background";
 
 export default function HomePage() {
   return (

@@ -13,3 +13,8 @@ export const NORTHERN_LIGHTS_BLEND = 1.9;
 export const NORTHERN_LIGHTS_SPEED = 0.3;
 
 export const NORTHERN_LIGHTS_COLOR_STOPS = ["#2f323f", "#64647c", "#c49f3b"];
+export const CHAT_INTERFACE_CHIPS_TEXT = [
+  "💡 Include your industry or use case",
+  "🎯 Mention your target audience",
+  "⏰ Add timeline or budget if relevant",
+];
