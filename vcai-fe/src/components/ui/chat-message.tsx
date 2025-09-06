@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AgentType } from "@/constants";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
@@ -9,7 +10,7 @@ interface ChatMessageProps {
   message: string;
   side?: "left" | "right";
   className?: string;
-  agent?: "marketing" | "product" | "legal" | "verifier";
+  agent?: AgentType;
 }
 
 export function ChatMessage({
@@ -23,10 +24,10 @@ export function ChatMessage({
   const isRight = side === "right";
 
   const getAvatarColor = () => {
-    if (agent === "marketing") return "bg-blue-500 text-white";
-    if (agent === "verifier") return "bg-green-500 text-white";
-    if (agent === "product") return "bg-yellow-500 text-white";
-    if (agent === "legal") return "bg-red-500 text-white";
+    if (agent === AgentType.MARKETING) return "bg-blue-500 text-white";
+    if (agent === AgentType.VERIFIER) return "bg-green-500 text-white";
+    if (agent === AgentType.PRODUCT) return "bg-yellow-500 text-white";
+    if (agent === AgentType.LEGAL) return "bg-red-500 text-white";
     return "bg-secondary text-secondary-foreground";
   };
 
@@ -38,10 +39,10 @@ export function ChatMessage({
         className
       )}
     >
-      <Avatar className="w-10 h-10 flex-shrink-0 ring-2 ring-border">
+      <Avatar className="w-12 h-12 flex-shrink-0 ring-2 ring-border">
         <AvatarImage src={avatarSrc || "/placeholder.svg"} />
-        <AvatarFallback className={`text-sm font-medium ${getAvatarColor()}`}>
-          {agent?.charAt(0).toUpperCase() || avatarFallback}
+        <AvatarFallback className={`text-xs font-bold ${getAvatarColor()}`}>
+          {avatarFallback}
         </AvatarFallback>
       </Avatar>
 

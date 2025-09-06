@@ -21,7 +21,7 @@ export default function AgentConversation() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex items-center justify-center">
       <SimpleAgentConversation input={navigationState?.input || ""} />
     </div>
   );
