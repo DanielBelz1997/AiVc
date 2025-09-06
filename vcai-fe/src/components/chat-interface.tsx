@@ -1,16 +1,18 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Send,
-  ImageIcon,
   FileText,
   X,
   Paperclip,
   Presentation,
+  FileType,
+  FileImage,
+  File,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useChatInterface } from "@/hooks/useChatInterface";
 import { CHAT_INTERFACE_CHIPS_TEXT } from "@/constants/home";
-
 interface ChatInterfaceProps {
   inputText: string;
 }
@@ -26,26 +28,11 @@ export function ChatInterface(props: ChatInterfaceProps) {
     handleFileAttach,
     removeFile,
     formatFileSize,
+    isPowerPointFile,
+    isDocFile,
+    isPdfFile,
+    isImageFile,
   } = useChatInterface();
-
-  // Helper function to determine if a file is a PowerPoint file
-  const isPowerPointFile = (file: { name: string; type: string }) => {
-    const powerPointExtensions = [".ppt", ".pptx", ".ppsx", ".pptm"];
-    const powerPointMimeTypes = [
-      "application/vnd.ms-powerpoint",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-      "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
-    ];
-
-    const fileName = file.name.toLowerCase();
-    const hasExtension = powerPointExtensions.some((ext) =>
-      fileName.endsWith(ext)
-    );
-    const hasMimeType = powerPointMimeTypes.includes(file.type);
-
-    return hasExtension || hasMimeType;
-  };
 
   return (
     <div className="">
@@ -62,13 +49,17 @@ export function ChatInterface(props: ChatInterfaceProps) {
           <div className="mb-4 flex flex-wrap gap-2">
             {attachedFiles.map((file) => (
               <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 flex items-center gap-3">
-                <div className="shrink-0">
-                  {file.type.startsWith("image/") ? (
-                    <ImageIcon className="h-5 w-5 text-blue-400" />
+                <div className="shrink-0 size-5">
+                  {isImageFile(file) ? (
+                    <FileImage className=" text-blue-400" />
                   ) : isPowerPointFile(file) ? (
-                    <Presentation className="h-5 w-5 text-orange-400" />
+                    <Presentation className=" text-orange-400" />
+                  ) : isPdfFile(file) ? (
+                    <FileType className=" text-red-400" />
+                  ) : isDocFile(file) ? (
+                    <File className=" text-blue-600" />
                   ) : (
-                    <FileText className="h-5 w-5 text-gray-400" />
+                    <FileText className=" text-gray-400" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -83,7 +74,7 @@ export function ChatInterface(props: ChatInterfaceProps) {
                   onClick={() => removeFile(file.id)}
                   className="shrink-0 h-8 w-8 text-gray-100 hover:text-gray-900"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </Button>
               </div>
             ))}
@@ -105,7 +96,7 @@ export function ChatInterface(props: ChatInterfaceProps) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="shrink-0 h-10 w-10 text-gray-400 hover:text-gray-300"
+                  className="shrink-0 size-10 text-gray-400 hover:text-gray-300"
                 >
                   <Paperclip className="h-5 w-5" />
                 </Button>

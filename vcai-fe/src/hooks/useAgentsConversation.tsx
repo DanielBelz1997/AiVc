@@ -7,7 +7,7 @@ export interface AgentResponse {
   timestamp: number;
 }
 
-export interface WorkflowState {
+export interface ConversationState {
   userPrompt: string;
   responses: AgentResponse[];
   currentAgent: string | null;
@@ -15,9 +15,9 @@ export interface WorkflowState {
   verifierConclusion: string | null;
 }
 
-export interface UseAgentsFlowProps {}
+export interface UseAgentsConversationProps {}
 
-export const useAgentsFlow = () => {
+export const useAgentsConversation = () => {
   const agents = {
     marketing: {
       name: "Marketing Strategist",
