@@ -13,6 +13,13 @@ import { useMultiConversation } from "@/hooks/useMultiConversation";
 import {
   ConversationType,
   CONVERSATION_LABELS,
+  AGENT_CONVERSATION_HEADER_TEXT,
+  AGENT_CONVERSATION_DESCRIPTION_TEXT,
+  AGENT_CONVERSATION_LEGAL_VERIFIER_TEXT,
+  AGENT_CONVERSATION_PRODUCT_VERIFIER_TEXT,
+  AGENT_CONVERSATION_MARKETING_VERIFIER_TEXT,
+  AGENT_CONVERSATION_SELECT_TEXT,
+  AGENT_CONVERSATION_STARTING_CONVERSATION_TEXT,
 } from "@/constants/agentConversation";
 
 interface SimpleAgentConversationProps {
@@ -46,10 +53,11 @@ export function SimpleAgentConversation({
   return (
     <div className="w-full max-w-5xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-4">
-        <TypographyH1 text="Agent Conversations" className="text-white" />
-        <p className="text-gray-400">
-          Multiple agent conversations running simultaneously
-        </p>
+        <TypographyH1
+          text={AGENT_CONVERSATION_HEADER_TEXT}
+          className="text-white"
+        />
+        <p className="text-gray-400">{AGENT_CONVERSATION_DESCRIPTION_TEXT}</p>
 
         <div className="flex justify-center">
           <Select
@@ -59,7 +67,7 @@ export function SimpleAgentConversation({
             }
           >
             <SelectTrigger className="w-64 bg-gray-800 border-gray-700 text-white">
-              <SelectValue placeholder="Select conversation to view" />
+              <SelectValue placeholder={AGENT_CONVERSATION_SELECT_TEXT} />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700">
               {Object.values(ConversationType).map((type) => (
@@ -112,11 +120,11 @@ export function SimpleAgentConversation({
           </h3>
           <p className="text-sm text-gray-400">
             {selectedConversation === ConversationType.MARKETING_VERIFIER &&
-              "Marketing strategy analysis and verification"}
+              AGENT_CONVERSATION_MARKETING_VERIFIER_TEXT}
             {selectedConversation === ConversationType.LEGAL_VERIFIER &&
-              "Legal compliance review and verification"}
+              AGENT_CONVERSATION_LEGAL_VERIFIER_TEXT}
             {selectedConversation === ConversationType.PRODUCT_VERIFIER &&
-              "Product development planning and verification"}
+              AGENT_CONVERSATION_PRODUCT_VERIFIER_TEXT}
           </p>
         </div>
         <div className="flex-1 overflow-y-auto space-y-4 p-6 scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-gray-900">
@@ -192,7 +200,7 @@ export function SimpleAgentConversation({
           {currentConversation.messages.length === 0 &&
             !currentConversation.isTyping && (
               <div className="text-center text-gray-400 py-12">
-                <p>Starting conversation...</p>
+                <p>{AGENT_CONVERSATION_STARTING_CONVERSATION_TEXT}</p>
               </div>
             )}
           <div ref={messagesEndRef} />

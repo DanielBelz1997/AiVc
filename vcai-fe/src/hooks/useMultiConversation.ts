@@ -2,45 +2,30 @@ import { useState, useEffect, useRef } from "react";
 import type { ConversationMessage } from "@/types/agentMessage";
 import { ConversationType } from "@/constants/agentConversation";
 import { getConversationMessages } from "@/constants/conversationData";
-
-interface ConversationState {
-  messages: ConversationMessage[];
-  isTyping: boolean;
-  currentMessageIndex: number;
-  isComplete: boolean;
-}
-
-type ConversationStates = {
-  [key in ConversationType]: ConversationState;
-};
+import type {
+  ConversationState,
+  ConversationStates,
+} from "@/types/multiConversation";
 
 interface UseMultiConversationProps {
   input: string;
 }
+
+const initialConversationStates: ConversationState = {
+  messages: [],
+  isTyping: false,
+  currentMessageIndex: 0,
+  isComplete: false,
+};
 
 export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
   const [selectedConversation, setSelectedConversation] =
     useState<ConversationType>(ConversationType.MARKETING_VERIFIER);
 
   const [conversations, setConversations] = useState<ConversationStates>({
-    [ConversationType.MARKETING_VERIFIER]: {
-      messages: [],
-      isTyping: false,
-      currentMessageIndex: 0,
-      isComplete: false,
-    },
-    [ConversationType.LEGAL_VERIFIER]: {
-      messages: [],
-      isTyping: false,
-      currentMessageIndex: 0,
-      isComplete: false,
-    },
-    [ConversationType.PRODUCT_VERIFIER]: {
-      messages: [],
-      isTyping: false,
-      currentMessageIndex: 0,
-      isComplete: false,
-    },
+    [ConversationType.MARKETING_VERIFIER]: initialConversationStates,
+    [ConversationType.LEGAL_VERIFIER]: initialConversationStates,
+    [ConversationType.PRODUCT_VERIFIER]: initialConversationStates,
   });
 
   // Store conversation data for each type
@@ -61,7 +46,6 @@ export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
     ),
   });
 
-  // Function to add a message to a specific conversation
   const addMessageToConversation = (
     conversationType: ConversationType,
     message: Omit<ConversationMessage, "id">,
@@ -86,7 +70,6 @@ export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
     }));
   };
 
-  // Function to set typing state for a specific conversation
   const setTypingForConversation = (
     conversationType: ConversationType,
     isTyping: boolean
@@ -100,9 +83,7 @@ export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
     }));
   };
 
-  // Start all conversations simultaneously but independently
   useEffect(() => {
-    // Create separate intervals for each conversation to ensure they don't interfere
     const conversationIntervals: { [key: string]: NodeJS.Timeout[] } = {};
 
     const startConversation = (conversationType: ConversationType) => {
@@ -110,14 +91,11 @@ export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
       const intervals: NodeJS.Timeout[] = [];
 
       messages.forEach((message, messageIndex) => {
-        // Calculate delay for this specific message
         const messageDelay = 3000 + messageIndex * 2500 + Math.random() * 1000; // 3s base + 2.5s per message + random
 
-        // Typing indicator timeout
         const typingTimeout = setTimeout(() => {
           setTypingForConversation(conversationType, true);
 
-          // Message appearance timeout
           const messageTimeout = setTimeout(() => {
             addMessageToConversation(conversationType, message, messageIndex);
           }, 1500 + Math.random() * 1000); // 1.5-2.5s typing delay
