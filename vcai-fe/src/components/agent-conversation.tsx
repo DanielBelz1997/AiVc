@@ -74,7 +74,7 @@ export function SimpleAgentConversation({
                 <SelectItem
                   key={type}
                   value={type}
-                  className="text-white hover:bg-gray-700 focus:bg-gray-700"
+                  className="hover:text-white text-gray-400 hover:bg-gray-700 focus:bg-gray-100"
                 >
                   {CONVERSATION_LABELS[type]}
                 </SelectItem>

@@ -1,4 +1,4 @@
-import { SimpleAgentConversation } from "@/components/simple-agent-conversation";
+import { SimpleAgentConversation } from "@/components/agent-conversation";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
