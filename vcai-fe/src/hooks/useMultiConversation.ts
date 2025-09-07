@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import type { ConversationMessage } from "@/types/agentMessage";
 import { ConversationType } from "@/constants/agentConversation";
 import { getConversationMessages } from "@/constants/conversationData";
@@ -6,6 +7,7 @@ import type {
   ConversationState,
   ConversationStates,
 } from "@/types/multiConversation";
+import type { ConversationResults } from "@/types/summaryReport";
 
 interface UseMultiConversationProps {
   input: string;
@@ -19,6 +21,7 @@ const initialConversationStates: ConversationState = {
 };
 
 export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
+  const navigate = useNavigate();
   const [selectedConversation, setSelectedConversation] =
     useState<ConversationType>(ConversationType.MARKETING_VERIFIER);
 
@@ -82,6 +85,55 @@ export const useMultiConversation = ({ input }: UseMultiConversationProps) => {
       },
     }));
   };
+
+  // Function to extract conversation results
+  const extractConversationResults = (): ConversationResults => {
+    const marketingResults = conversations[
+      ConversationType.MARKETING_VERIFIER
+    ].messages
+      .filter((msg) => msg.agent === "marketing")
+      .map((msg) => msg.message);
+
+    const legalResults = conversations[ConversationType.LEGAL_VERIFIER].messages
+      .filter((msg) => msg.agent === "legal")
+      .map((msg) => msg.message);
+
+    const productResults = conversations[
+      ConversationType.PRODUCT_VERIFIER
+    ].messages
+      .filter((msg) => msg.agent === "product")
+      .map((msg) => msg.message);
+
+    return {
+      marketingResults,
+      legalResults,
+      productResults,
+      userInput: input,
+    };
+  };
+
+  // Check if all conversations are complete
+  const allConversationsComplete = Object.values(conversations).every(
+    (conv) => conv.isComplete
+  );
+
+  // Navigate to summary when all conversations are done
+  useEffect(() => {
+    if (
+      allConversationsComplete &&
+      Object.values(conversations).some((conv) => conv.messages.length > 0)
+    ) {
+      // Small delay to allow user to see completion status
+      const timeout = setTimeout(() => {
+        const conversationResults = extractConversationResults();
+        navigate("/summary", {
+          state: { conversationResults },
+        });
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [allConversationsComplete, conversations, navigate, input]);
 
   useEffect(() => {
     const conversationIntervals: { [key: string]: NodeJS.Timeout[] } = {};

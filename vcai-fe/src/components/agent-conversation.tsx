@@ -38,6 +38,11 @@ export function SimpleAgentConversation({
     conversationData,
   } = useMultiConversation({ input });
 
+  // Check if all conversations are complete
+  const allConversationsComplete = Object.values(conversations).every(
+    (conv) => conv.isComplete
+  );
+
   const currentConversation = conversations[selectedConversation];
   const currentConversationData = conversationData[selectedConversation];
 
@@ -111,6 +116,21 @@ export function SimpleAgentConversation({
             );
           })}
         </div>
+
+        {/* Summary Generation Notification */}
+        {allConversationsComplete && (
+          <div className="bg-green-900/50 border border-green-700 rounded-2xl p-4 text-center">
+            <div className="flex items-center justify-center gap-3 text-green-300">
+              <div className="w-6 h-6 border-4 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-lg font-semibold">
+                All conversations complete!
+              </span>
+            </div>
+            <p className="text-green-400 text-sm mt-2">
+              Generating your startup success analysis report...
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="bg-gray-900/50 border border-gray-700 rounded-2xl p-6 h-[500px] flex flex-col">
