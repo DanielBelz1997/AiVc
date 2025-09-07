@@ -1,3 +1,16 @@
 {
-  "cSpell.words": ["shadcn", "Vcai"]
+  "cSpell.words": [
+    "aiofiles",
+    "dotenv",
+    "fastapi",
+    "httpx",
+    "passlib",
+    "psycopg",
+    "pyautogen",
+    "pydantic",
+    "shadcn",
+    "sqlalchemy",
+    "uvicorn",
+    "Vcai"
+  ]
 }
