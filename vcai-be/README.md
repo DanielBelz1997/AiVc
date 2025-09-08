@@ -1,16 +1,30 @@
 # VcAi Backend
 
-A Python backend API built with FastAPI and AutoGen for multi-agent AI conversations.
+A specialized Python backend API built with FastAPI and AutoGen for intelligent startup analysis through multi-agent AI conversations with real-time WebSocket communication.
 
 ## Features
 
-- **FastAPI REST API**: Modern, fast web framework for building APIs
-- **AutoGen Integration**: Multi-agent conversational AI system
-- **Agent Management**: Create, update, and manage AI agents
-- **Conversation Handling**: Persistent conversation management
-- **WebSocket Support**: Real-time communication capabilities
-- **Comprehensive Logging**: Structured logging for debugging and monitoring
-- **Docker Ready**: Containerization support for deployment
+### 🚀 **Specialized AI Workflow**
+
+- **5 Specialized Agents**: Marketing, Product, Legal, Verifier, and Summary agents
+- **Multi-Phase Analysis**: Parallel specialist analysis → Verification conversations → Summary report
+- **Real-time Updates**: WebSocket-powered live conversation streaming
+- **File Upload Support**: Process business ideas with supporting documents
+
+### 🔧 **Technical Features**
+
+- **FastAPI REST API**: Modern, high-performance web framework
+- **AutoGen Integration**: Advanced multi-agent conversational AI system
+- **WebSocket Communication**: Real-time bidirectional communication
+- **File Processing**: Support for multiple file formats and attachments
+- **Comprehensive API**: RESTful endpoints with OpenAPI documentation
+
+### 📊 **Business Intelligence**
+
+- **Comprehensive Analysis**: Marketing opportunity, technical feasibility, legal compliance
+- **Verification Process**: AI-powered fact-checking and validation
+- **Structured Reports**: Professional startup success reports with scores and recommendations
+- **Actionable Insights**: Specific next steps and strategic recommendations
 
 ## Project Structure
 
@@ -274,3 +288,64 @@ For questions or issues:
 2. Review the logs for error details
 3. Ensure all environment variables are set correctly
 4. Verify your OpenAI API key has sufficient credits
+5. Test the workflow with `python test_workflow.py`
+
+## 🎯 VcAi Specialized Workflow
+
+### The 5 AI Agents
+
+#### 1. **Marketing Agent** 🎯
+
+- **Role**: Market opportunity analysis
+- **Expertise**: Target markets, competitive landscape, go-to-market strategy
+- **Output**: Market size assessment, customer acquisition strategy, revenue projections
+
+#### 2. **Product Agent** 🛠️
+
+- **Role**: Technical feasibility evaluation
+- **Expertise**: Product development, technical architecture, user experience
+- **Output**: Development roadmap, technical requirements, scalability assessment
+
+#### 3. **Legal Agent** ⚖️
+
+- **Role**: Compliance and regulatory review
+- **Expertise**: Business law, data privacy, intellectual property
+- **Output**: Compliance requirements, legal risks, regulatory guidance
+
+#### 4. **Verifier Agent** ✅
+
+- **Role**: Fact-checking and validation
+- **Expertise**: Cross-verification, accuracy assessment, assumption testing
+- **Output**: Verified analysis, identified gaps, strengthened recommendations
+
+#### 5. **Summary Agent** 📋
+
+- **Role**: Comprehensive report synthesis
+- **Expertise**: Business analysis, scoring methodology, strategic recommendations
+- **Output**: Startup success report with scores, risks, opportunities, and next steps
+
+### API Usage Example
+
+```bash
+# Start analysis
+curl -X POST "http://localhost:8000/api/v1/chat/analyze-startup" \
+  -F "prompt=My AI-powered restaurant recommendation app idea..."
+
+# Connect to WebSocket for real-time updates
+# ws://localhost:8000/api/v1/ws?conversation_id=<conversation_id>
+
+# Get final results
+curl "http://localhost:8000/api/v1/chat/conversations/<conversation_id>"
+```
+
+### Testing the Workflow
+
+Run the included test script to verify the complete workflow:
+
+```bash
+# Ensure backend is running
+python scripts/start_dev.py
+
+# In another terminal, run the test
+python test_workflow.py
+```

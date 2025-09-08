@@ -6,7 +6,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.services.autogen_service import AutoGenService
+from app.services.specialized_autogen_service import SpecializedAutoGenService
 
 router = APIRouter()
 
@@ -28,89 +28,174 @@ class AgentResponse(BaseModel):
     created_at: str
 
 
-@router.post("/create", response_model=AgentResponse)
-async def create_agent(config: AgentConfig):
-    """Create a new agent with specified configuration"""
+@router.get("/", response_model=List[dict])
+async def list_specialized_agents():
+    """List all specialized agents in the VcAi workflow"""
     try:
-        autogen_service = AutoGenService()
-        agent = await autogen_service.create_agent(config.dict())
-        return agent
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create agent: {str(e)}")
-
-
-@router.get("/", response_model=List[AgentResponse])
-async def list_agents():
-    """List all available agents"""
-    try:
-        autogen_service = AutoGenService()
-        agents = await autogen_service.list_agents()
+        agents = [
+            {
+                "agent_id": "marketing",
+                "name": "Marketing Agent",
+                "description": "Analyzes business ideas from marketing and market opportunity perspective",
+                "role": "specialist",
+                "status": "active"
+            },
+            {
+                "agent_id": "product",
+                "name": "Product Agent", 
+                "description": "Evaluates technical feasibility and product development aspects",
+                "role": "specialist",
+                "status": "active"
+            },
+            {
+                "agent_id": "legal",
+                "name": "Legal Agent",
+                "description": "Reviews legal compliance and regulatory requirements",
+                "role": "specialist", 
+                "status": "active"
+            },
+            {
+                "agent_id": "verifier",
+                "name": "Verifier Agent",
+                "description": "Verifies and validates analysis from specialist agents",
+                "role": "verifier",
+                "status": "active"
+            },
+            {
+                "agent_id": "summary",
+                "name": "Summary Agent",
+                "description": "Synthesizes all verified analyses into comprehensive reports",
+                "role": "synthesizer",
+                "status": "active"
+            }
+        ]
         return agents
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list agents: {str(e)}")
 
 
-@router.get("/{agent_id}", response_model=AgentResponse)
-async def get_agent(agent_id: str):
-    """Get agent details by ID"""
-    try:
-        autogen_service = AutoGenService()
-        agent = await autogen_service.get_agent(agent_id)
-        
-        if not agent:
-            raise HTTPException(status_code=404, detail="Agent not found")
-        
-        return agent
+@router.get("/{agent_id}")
+async def get_agent_info(agent_id: str):
+    """Get detailed information about a specific agent"""
+    agents_info = {
+        "marketing": {
+            "agent_id": "marketing",
+            "name": "Marketing Strategy Expert",
+            "description": "Specializes in market analysis, customer acquisition, and business strategy",
+            "capabilities": [
+                "Market size and opportunity assessment",
+                "Target audience identification",
+                "Competitive landscape analysis", 
+                "Go-to-market strategy development",
+                "Revenue model evaluation",
+                "Brand positioning recommendations"
+            ],
+            "role": "specialist",
+            "status": "active"
+        },
+        "product": {
+            "agent_id": "product", 
+            "name": "Product Development Expert",
+            "description": "Focuses on technical feasibility and product development planning",
+            "capabilities": [
+                "Technical feasibility assessment",
+                "Product architecture recommendations",
+                "Development timeline estimation",
+                "Resource requirement analysis",
+                "User experience evaluation",
+                "Scalability planning"
+            ],
+            "role": "specialist",
+            "status": "active"
+        },
+        "legal": {
+            "agent_id": "legal",
+            "name": "Legal and Compliance Expert", 
+            "description": "Ensures regulatory compliance and identifies legal considerations",
+            "capabilities": [
+                "Regulatory compliance review",
+                "Privacy law assessment (GDPR, CCPA)",
+                "Intellectual property guidance",
+                "Terms of service recommendations",
+                "Liability risk evaluation",
+                "Corporate structure advice"
+            ],
+            "role": "specialist",
+            "status": "active"
+        },
+        "verifier": {
+            "agent_id": "verifier",
+            "name": "Analysis Verification Expert",
+            "description": "Validates and fact-checks specialist agent recommendations",
+            "capabilities": [
+                "Fact verification and validation",
+                "Assumption challenge and testing",
+                "Completeness assessment",
+                "Accuracy confirmation",
+                "Best practice validation",
+                "Critical gap identification"
+            ],
+            "role": "verifier", 
+            "status": "active"
+        },
+        "summary": {
+            "agent_id": "summary",
+            "name": "Business Analysis Synthesizer",
+            "description": "Creates comprehensive startup success reports",
+            "capabilities": [
+                "Multi-perspective synthesis",
+                "Success scoring and metrics",
+                "Risk-opportunity analysis", 
+                "Actionable recommendations",
+                "Executive summary creation",
+                "Next steps prioritization"
+            ],
+            "role": "synthesizer",
+            "status": "active"
+        }
+    }
     
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get agent: {str(e)}")
-
-
-@router.put("/{agent_id}", response_model=AgentResponse)
-async def update_agent(agent_id: str, config: AgentConfig):
-    """Update agent configuration"""
-    try:
-        autogen_service = AutoGenService()
-        agent = await autogen_service.update_agent(agent_id, config.dict())
-        
-        if not agent:
-            raise HTTPException(status_code=404, detail="Agent not found")
-        
-        return agent
+    if agent_id not in agents_info:
+        raise HTTPException(status_code=404, detail="Agent not found")
     
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update agent: {str(e)}")
+    return agents_info[agent_id]
 
 
-@router.delete("/{agent_id}")
-async def delete_agent(agent_id: str):
-    """Delete an agent by ID"""
-    try:
-        autogen_service = AutoGenService()
-        success = await autogen_service.delete_agent(agent_id)
-        
-        if not success:
-            raise HTTPException(status_code=404, detail="Agent not found")
-        
-        return {"message": "Agent deleted successfully"}
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete agent: {str(e)}")
-
-
-@router.post("/{agent_id}/reset")
-async def reset_agent(agent_id: str):
-    """Reset agent conversation history"""
-    try:
-        autogen_service = AutoGenService()
-        success = await autogen_service.reset_agent(agent_id)
-        
-        if not success:
-            raise HTTPException(status_code=404, detail="Agent not found")
-        
-        return {"message": "Agent reset successfully"}
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to reset agent: {str(e)}")
+@router.get("/workflow/status")
+async def get_workflow_info():
+    """Get information about the VcAi analysis workflow"""
+    return {
+        "workflow_name": "VcAi Startup Analysis", 
+        "description": "Comprehensive startup idea evaluation using specialized AI agents",
+        "phases": [
+            {
+                "phase": 1,
+                "name": "Parallel Specialist Analysis",
+                "description": "Marketing, Product, and Legal agents analyze the idea simultaneously",
+                "agents": ["marketing", "product", "legal"],
+                "duration_estimate": "2-5 minutes"
+            },
+            {
+                "phase": 2, 
+                "name": "Verification Conversations",
+                "description": "Verifier agent reviews each specialist analysis",
+                "agents": ["verifier"],
+                "interactions": [
+                    "marketing ↔ verifier",
+                    "product ↔ verifier", 
+                    "legal ↔ verifier"
+                ],
+                "duration_estimate": "3-6 minutes"
+            },
+            {
+                "phase": 3,
+                "name": "Summary Report Generation", 
+                "description": "Summary agent creates comprehensive startup success report",
+                "agents": ["summary"],
+                "duration_estimate": "1-2 minutes"
+            }
+        ],
+        "total_duration_estimate": "6-13 minutes",
+        "output": "Comprehensive startup success report with scores, recommendations, and next steps"
+    }

@@ -1,12 +1,12 @@
 """
-AutoGen service for managing multi-agent conversations
+AutoGen service for managing multi-agent conversations with specialized workflow
 """
 
 import asyncio
 import json
 import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
 
 import autogen
@@ -14,6 +14,7 @@ from autogen import ConversableAgent, UserProxyAgent, AssistantAgent
 
 from app.core.config import settings
 from app.core.exceptions import AutoGenException
+from app.services.websocket_manager import manager as websocket_manager
 
 
 class AutoGenService:
