@@ -8,6 +8,8 @@ export default function AgentConversation() {
 
   const navigationState = location.state as {
     input: string;
+    conversationId?: string;
+    usingBackend?: boolean;
   } | null;
 
   useEffect(() => {
@@ -22,7 +24,11 @@ export default function AgentConversation() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <SimpleAgentConversation input={navigationState?.input || ""} />
+      <SimpleAgentConversation
+        input={navigationState?.input || ""}
+        conversationId={navigationState?.conversationId}
+        usingBackend={navigationState?.usingBackend || false}
+      />
     </div>
   );
 }

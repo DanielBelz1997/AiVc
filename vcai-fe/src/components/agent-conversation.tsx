@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMultiConversation } from "@/hooks/useMultiConversation";
+import { useRealTimeConversations } from "@/hooks/useRealTimeConversations";
 import {
   ConversationType,
   CONVERSATION_LABELS,
@@ -24,19 +25,29 @@ import {
 
 interface SimpleAgentConversationProps {
   input: string;
+  conversationId?: string;
+  usingBackend?: boolean;
 }
 
 export function SimpleAgentConversation({
   input,
+  conversationId,
+  usingBackend = false,
 }: SimpleAgentConversationProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const {
-    selectedConversation,
-    setSelectedConversation,
-    conversations,
-    conversationData,
-  } = useMultiConversation({ input });
+  // Use real-time conversations if using backend, otherwise fall back to simulation
+  const realTimeData = useRealTimeConversations({
+    input,
+    conversationId,
+    usingBackend,
+  });
+
+  const simulatedData = useMultiConversation({ input });
+
+  // Choose which data source to use
+  const { selectedConversation, setSelectedConversation, conversations } =
+    usingBackend ? realTimeData : simulatedData;
 
   // Check if all conversations are complete
   const allConversationsComplete = Object.values(conversations).every(
@@ -44,7 +55,13 @@ export function SimpleAgentConversation({
   );
 
   const currentConversation = conversations[selectedConversation];
-  const currentConversationData = conversationData[selectedConversation];
+  const currentConversationData = usingBackend
+    ? null
+    : simulatedData.conversationData[selectedConversation];
+
+  // Get connection status if using backend
+  const connectionStatus = usingBackend ? realTimeData.connectionStatus : null;
+  const analysisState = usingBackend ? realTimeData.analysisState : null;
 
   // Auto-scroll to bottom when new messages are added
   const scrollToBottom = () => {
@@ -63,6 +80,34 @@ export function SimpleAgentConversation({
           className="text-white"
         />
         <p className="text-gray-400">{AGENT_CONVERSATION_DESCRIPTION_TEXT}</p>
+
+        {/* Backend connection status */}
+        {usingBackend && (
+          <div className="flex items-center justify-center gap-2 text-sm">
+            {connectionStatus?.isConnected ? (
+              <div className="flex items-center gap-2 text-green-400">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span>Live Analysis: {analysisState?.status}</span>
+                {analysisState?.currentPhase &&
+                  analysisState?.currentPhase > 0 && (
+                    <span className="text-gray-400">
+                      (Phase {analysisState?.currentPhase}/3)
+                    </span>
+                  )}
+              </div>
+            ) : connectionStatus?.error ? (
+              <div className="flex items-center gap-2 text-red-400">
+                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                <span>Connection Error: {connectionStatus.error}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-yellow-400">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                <span>Connecting to analysis service...</span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex justify-center">
           <Select
@@ -162,23 +207,24 @@ export function SimpleAgentConversation({
           {currentConversation.isTyping && (
             <div
               className={`flex gap-3 max-w-[80%] mb-4 ${
-                currentConversationData[currentConversation.currentMessageIndex]
-                  ?.side === "right"
+                currentConversationData?.[
+                  currentConversation.currentMessageIndex
+                ]?.side === "right"
                   ? "ml-auto flex-row-reverse"
                   : "mr-auto"
               }`}
             >
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center ring-2 ring-border ${
-                  currentConversationData[
+                  currentConversationData?.[
                     currentConversation.currentMessageIndex
                   ]?.agent === "marketing"
                     ? "bg-blue-500 text-white"
-                    : currentConversationData[
+                    : currentConversationData?.[
                         currentConversation.currentMessageIndex
                       ]?.agent === "legal"
                     ? "bg-red-500 text-white"
-                    : currentConversationData[
+                    : currentConversationData?.[
                         currentConversation.currentMessageIndex
                       ]?.agent === "product"
                     ? "bg-yellow-500 text-white"
@@ -187,7 +233,7 @@ export function SimpleAgentConversation({
               >
                 <span className="text-xs font-bold">
                   {
-                    currentConversationData[
+                    currentConversationData?.[
                       currentConversation.currentMessageIndex
                     ]?.avatarFallback
                   }
@@ -195,7 +241,7 @@ export function SimpleAgentConversation({
               </div>
               <div
                 className={`rounded-2xl px-4 py-3 shadow-lg ${
-                  currentConversationData[
+                  currentConversationData?.[
                     currentConversation.currentMessageIndex
                   ]?.side === "right"
                     ? "bg-primary text-primary-foreground rounded-br-md shadow-primary/20"

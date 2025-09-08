@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFileUpload } from "./useFileUpload";
+import { useStartupAnalysis } from "./useStartupAnalysis";
 
 export const useChatInterface = () => {
   const {
@@ -14,23 +15,54 @@ export const useChatInterface = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { startAnalysis, state: analysisState } = useStartupAnalysis();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() && attachedFiles.length === 0) return;
 
-    navigate("/agents", {
-      state: {
-        input,
-        attachedFiles,
-      },
-    });
+    setIsLoading(true);
 
-    setTimeout(() => {
-      setInput("");
-      setAttachedFiles([]);
+    try {
+      // Convert attached files to File objects
+      const files = attachedFiles
+        .map((file) => {
+          // If it's already a File object, use it; otherwise create a new one
+          if (file instanceof File) {
+            return file;
+          }
+          // For URL-based files (from file picker), we'd need to fetch them
+          // For now, we'll skip URL-based files and only handle actual File objects
+          return null;
+        })
+        .filter(Boolean) as File[];
+
+      // Start the analysis workflow
+      await startAnalysis({
+        prompt: input,
+        files: files.length > 0 ? files : undefined,
+      });
+
+      // Navigate to agents page with the analysis state
+      navigate("/agents", {
+        state: {
+          input,
+          attachedFiles,
+          conversationId: analysisState.conversationId,
+          usingBackend: true,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to start analysis:", error);
+      // You might want to show an error message to the user here
+    } finally {
       setIsLoading(false);
-    }, 2000); // Give more time for navigation
+      // Don't clear the form immediately in case of error
+      setTimeout(() => {
+        setInput("");
+        setAttachedFiles([]);
+      }, 1000);
+    }
   };
 
   // Helper function to determine if a file is a PowerPoint file
