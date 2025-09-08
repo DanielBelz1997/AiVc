@@ -9,6 +9,7 @@ import json
 
 from app.services.specialized_autogen_service import SpecializedAutoGenService
 from app.core.exceptions import AutoGenException
+from app.models.schemas import ChatRequestSchema
 
 router = APIRouter()
 
@@ -86,7 +87,7 @@ async def analyze_startup_idea(
 
 
 @router.post("/message")
-async def send_simple_message(request: ChatRequest):
+async def send_simple_message(request: ChatRequestSchema):
     """Send a simple message for basic chat functionality"""
     try:
         # For backward compatibility, maintain simple chat
